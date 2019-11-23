@@ -1,0 +1,118 @@
+//公共库自己不要设置env变量, 由引用库来设置, 否则会覆盖evn变量
+// 引用库只需要依赖配置
+println ext.has('env')
+if(ext.has('env') && ext.env == 'dev'){
+    dependencies {
+        // other project
+        compile project(':jkutil')
+    }
+
+    return
+}
+
+//gradle脚本自身需要使用的资源
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/repositories/snapshots'
+        }
+        maven {
+            url "http://dl.bintray.com/kotlin/kotlin"
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
+        }
+
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
+
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
+
+        classpath "org.akhikhl.gretty:gretty:${gretty_version}"
+
+        classpath "gradle.plugin.aspectj:gradle-aspectj:0.1.6"
+    }
+}
+
+project(':') {
+    group 'net.jkcode.jkguard'
+    version '1.9.0'
+
+    apply plugin: 'java'
+    apply plugin: 'kotlin'
+    apply plugin: 'maven'
+
+    sourceCompatibility = jvm_version
+    compileKotlin {
+        kotlinOptions {
+            freeCompilerArgs = ["-Xjvm-default=enable"]
+            jvmTarget = jvm_version
+        }
+    }
+    compileTestKotlin {
+        kotlinOptions {
+            freeCompilerArgs = ["-Xjvm-default=enable"]
+            jvmTarget = jvm_version
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/repositories/snapshots'
+        }
+        maven {
+            url "http://dl.bintray.com/kotlin/kotlin"
+        }
+        maven {
+            url "https://repository.apache.org/content/repositories/releases"
+        }
+        maven {
+            url 'https://dl.bintray.com/kotlin/kotlin-eap'
+        }
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs = ['src/main/java', 'src/main/kotlin']
+            }
+            resources {
+                srcDirs = ['src/main/resources']
+            }
+        }
+        test {
+            java {
+                srcDirs = ['src/test/java', 'src/test/kotlin']
+            }
+            resources {
+                srcDirs = ['src/test/resources']
+            }
+        }
+    }
+
+    dependencies {
+        // kotlin
+        compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+        compile 'org.jetbrains.kotlin:kotlin-reflect'
+        //compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    
+        // jkutil
+        compile "net.jkcode.jkutil:jkutil:$jkutil_version"
+
+        // test
+        testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+        testCompile 'junit:junit:4.11'
+    }
+
+}
+
+	
