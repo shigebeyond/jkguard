@@ -24,7 +24,7 @@ interface IMethodGuard {
     /**
      * 带守护的方法调用者
      */
-    val handler: net.jkcode.jkguard.IMethodGuardInvoker
+    val handler: IMethodGuardInvoker
 
     /**
      * 方法调用的对象

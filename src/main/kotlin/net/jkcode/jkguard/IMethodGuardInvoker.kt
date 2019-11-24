@@ -20,7 +20,7 @@ interface IMethodGuardInvoker {
      * @param method
      * @return
      */
-    fun getMethodGuard(method: Method): net.jkcode.jkguard.IMethodGuard
+    fun getMethodGuard(method: Method): IMethodGuard
 
     /**
      * 获得方法调用的对象
@@ -50,7 +50,7 @@ interface IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    fun invokeAfterCombine(methodGuard: net.jkcode.jkguard.IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any?
+    fun invokeAfterCombine(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any?
 
     /**
      * 缓存之后的调用
@@ -61,7 +61,7 @@ interface IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    fun invokeAfterCache(methodGuard: net.jkcode.jkguard.IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any?
+    fun invokeAfterCache(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any?
 
     /**
      * 守护之后真正的调用

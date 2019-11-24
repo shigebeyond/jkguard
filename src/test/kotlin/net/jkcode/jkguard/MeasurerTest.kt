@@ -4,7 +4,6 @@ import net.jkcode.jkguard.measure.HashedWheelMeasurer
 import net.jkcode.jkutil.common.currMillisCached
 import net.jkcode.jkutil.common.randomBoolean
 import net.jkcode.jkutil.common.randomLong
-import net.jkcode.jkguard.measure.HashedWheelMeasurer
 import org.junit.Test
 
 open class MeasurerTest {

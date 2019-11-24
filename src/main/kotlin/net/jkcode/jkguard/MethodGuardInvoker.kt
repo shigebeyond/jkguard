@@ -17,21 +17,21 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2017-11-08 7:25 PM
  */
-abstract class MethodGuardInvoker : net.jkcode.jkguard.IMethodGuardInvoker {
+abstract class MethodGuardInvoker : IMethodGuardInvoker {
 
     /**
      * 方法守护者
      */
-    protected val methodGuards: ConcurrentHashMap<Method, net.jkcode.jkguard.MethodGuard> = ConcurrentHashMap();
+    protected val methodGuards: ConcurrentHashMap<Method, MethodGuard> = ConcurrentHashMap();
 
     /**
      * 获得方法守护者
      * @param method
      * @return
      */
-    public override fun getMethodGuard(method: Method): net.jkcode.jkguard.IMethodGuard {
+    public override fun getMethodGuard(method: Method): IMethodGuard {
         return methodGuards.getOrPut(method){
-            return net.jkcode.jkguard.MethodGuard(method, this)
+            return MethodGuard(method, this)
         }
     }
 
@@ -75,16 +75,16 @@ abstract class MethodGuardInvoker : net.jkcode.jkguard.IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    public override fun invokeAfterCombine(methodGuard: net.jkcode.jkguard.IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
+    public override fun invokeAfterCombine(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
         // 1 断路
         if(methodGuard.circuitBreaker != null)
             if(!methodGuard.circuitBreaker!!.acquire())
-                return handleException(methodGuard, method, args, net.jkcode.jkguard.GuardException("断路"))
+                return handleException(methodGuard, method, args, GuardException("断路"))
 
         // 2 限流
         if(methodGuard.rateLimiter != null)
             if(!methodGuard.rateLimiter!!.acquire())
-                return handleException(methodGuard, method, args, net.jkcode.jkguard.GuardException("限流"))
+                return handleException(methodGuard, method, args, GuardException("限流"))
 
         // 3 缓存
         if(methodGuard.cacheHandler != null) {
@@ -105,7 +105,7 @@ abstract class MethodGuardInvoker : net.jkcode.jkguard.IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    public override fun invokeAfterCache(methodGuard: net.jkcode.jkguard.IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
+    public override fun invokeAfterCache(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
         // 1 计量
         // 1.1 添加总计数
         methodGuard.measurer?.currentBucket()?.addTotal()
@@ -141,7 +141,7 @@ abstract class MethodGuardInvoker : net.jkcode.jkguard.IMethodGuardInvoker {
      * @param r 异常
      * @return
      */
-    protected fun handleException(methodGuard: net.jkcode.jkguard.IMethodGuard, method: Method, args: Array<Any?>, r: Throwable): Any? {
+    protected fun handleException(methodGuard: IMethodGuard, method: Method, args: Array<Any?>, r: Throwable): Any? {
         if (methodGuard.degradeHandler == null)
             throw r
 

@@ -1,5 +1,7 @@
 # Jkguard
 
+Jkguard is the application guardian, which provides guardian functions, such as request combining / traffic statistics / circuit breaking / rate limiting / degradation / caching, to to guarantee reliability of application.
+
 jkguard 是应用守护者, 提供了请求合并/流量统计/熔断/限流/降级/缓存等多功能的守护, 能够在一个或多个依赖同时出现问题时保证系统依然可用。
 
 1. 请求合并: 将单个请求合并成一个批量请求, 能够降低访问频率, 增加系统吞吐量, 优化处理性能.
@@ -38,9 +40,13 @@ jkguard 是应用守护者, 提供了请求合并/流量统计/熔断/限流/降
 6. `@Degrade` -- 降级: 有异常后备方法, 对应实例化与调用处理类 `IDegradeHandler` 
 7. `@Cache` -- 缓存, 对应实例化与调用处理类 `ICacheHandler`
 
-这些注解只针对rpc服务类, 当然可应用在服务接口, 或服务实现类.
+这些注解可应用到jkmvc/jksoa框架中
+
+## 应用到jksoa框架
+这些注解只针对rpc服务类上的方法, 当然可应用在服务接口, 或服务实现类.
 一般只应用在服务接口.
-至于服务实现类, 你大可自己写代码直接调用处理类, 没必要用注解.
+至于服务实现类, 你大可自己写代码直接调用处理类, 无需用注解. 当然你可以用注解来简化使用.
+
 
 ```
 package net.jkcode.jksoa.rpc.example
@@ -110,6 +116,9 @@ interface IGuardService /*: Remote // rmi协议服务接口 */ {
     fun getUserWhenRandomException(id: Int): User
 }
 ```
+
+## 应用到jkmvc框架中
+这些注解只针对controller类的方法, 使用方式同上
 
 # 文档
 

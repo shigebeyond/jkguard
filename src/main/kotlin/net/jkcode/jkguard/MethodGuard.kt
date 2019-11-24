@@ -23,8 +23,8 @@ import java.util.concurrent.CompletableFuture
  */
 open class MethodGuard(
         public override val method: Method, // 被守护的方法
-        public override val handler: net.jkcode.jkguard.IMethodGuardInvoker // 带守护的方法调用者
-) : net.jkcode.jkguard.IMethodGuard {
+        public override val handler: IMethodGuardInvoker // 带守护的方法调用者
+) : IMethodGuard {
 
     /**
      * 方法的key合并器
@@ -38,7 +38,7 @@ open class MethodGuard(
             val msg = "方法[${method.getSignature(true)}]声明了注解@KeyCombine"
             // 检查方法参数
             if (method.parameterTypes.size != 1)
-                throw net.jkcode.jkguard.GuardException("${msg}必须有唯一的参数")
+                throw GuardException("${msg}必须有唯一的参数")
 
             // 创建请求合并器
             KeyFutureSupplierCombiner<Any, Any?>{ singleArg -> // 单参数的future工厂
@@ -64,14 +64,14 @@ open class MethodGuard(
             val batchMethod = method.declaringClass.methods.first { it.name == annotation.batchMethod }
             val msg = "方法[${method.getSignature(true)}]的注解@GroupCombine中声明的batchMethod=[${annotation.batchMethod}]"
             if (batchMethod == null)
-                throw net.jkcode.jkguard.GuardException("${msg}不存在")
+                throw GuardException("${msg}不存在")
             // 检查方法参数
             val pt = batchMethod.parameterTypes
             if (pt.size != 1 || !List::class.java.isAssignableFrom(pt.first()))
-                throw net.jkcode.jkguard.GuardException("${msg}必须有唯一的List类型的参数")
+                throw GuardException("${msg}必须有唯一的List类型的参数")
             // 检查方法返回值
             if (!List::class.java.isAssignableFrom(batchMethod.returnType) && !CompletableFuture::class.java.isAssignableFrom(batchMethod.returnType))
-                throw net.jkcode.jkguard.GuardException("${msg}必须有的List或CompletableFuture<List>类型的返回值")
+                throw GuardException("${msg}必须有的List或CompletableFuture<List>类型的返回值")
 
             // 创建请求合并器
             GroupFutureSupplierCombiner<Any, Any?, Any>(annotation){ singleArg -> // 单参数的future工厂
@@ -136,13 +136,13 @@ open class MethodGuard(
             val fallbackMethod = method.declaringClass.methods.first { it.name == annotation.fallbackMethod }
             val msg = "源方法 ${method.getSignature(true)}的注解@Degrade声明了fallbackMethod=[${annotation.fallbackMethod}]"
             if(fallbackMethod == null)
-                throw net.jkcode.jkguard.GuardException("${msg}不存在")
+                throw GuardException("${msg}不存在")
             // 检查参数类型: 注 != 不好使
             if (!Arrays.equals(method.parameterTypes, fallbackMethod.parameterTypes))
-                throw net.jkcode.jkguard.GuardException("$msg 与后备方法 ${fallbackMethod.getSignature(true)} 的参数类型不一致")
+                throw GuardException("$msg 与后备方法 ${fallbackMethod.getSignature(true)} 的参数类型不一致")
             // 检查返回类型
             if (method.returnType != fallbackMethod.returnType)
-                throw net.jkcode.jkguard.GuardException("$msg 与后备方法 ${fallbackMethod.getSignature(true)} 的返回值类型不一致")
+                throw GuardException("$msg 与后备方法 ${fallbackMethod.getSignature(true)} 的返回值类型不一致")
 
             object : IDegradeHandler {
                 /**
@@ -167,7 +167,7 @@ open class MethodGuard(
         if(annotation == null)
             null
         else if(measurer == null)
-            throw net.jkcode.jkguard.GuardException("方法中${method.getSignature(true)}的注解CircuitBreak, 必须配合有注解@Metric")
+            throw GuardException("方法中${method.getSignature(true)}的注解CircuitBreak, 必须配合有注解@Metric")
         else
              CircuitBreaker(annotation, measurer!!)
     }
