@@ -31,7 +31,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      */
     public override fun getMethodGuard(method: Method): IMethodGuard {
         return methodGuards.getOrPut(method){
-            return MethodGuard(method, this)
+            MethodGuard(method, this)
         }
     }
 
