@@ -44,9 +44,10 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @return 结果
      */
     public override fun guardInvoke(method: Method, proxy: Any, args: Array<Any?>): Any? {
-        guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", ")") {
-            it.toExpr()
-        }, this::class.simpleName, method.declaringClass.name, method.name)
+        if(guardLogger.isDebugEnabled)
+            guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", ")") {
+                it.toExpr()
+            }, this::class.simpleName, method.declaringClass.name, method.name)
 
         // 1 合并调用
         // 1.1 根据group来合并请求
@@ -145,9 +146,10 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
         if (methodGuard.degradeHandler == null)
             throw r
 
-        guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
-            it.toExpr()
-        }, this::class.simpleName, method.declaringClass.name, method.name, r.message, method.degrade?.fallbackMethod)
+        if(guardLogger.isDebugEnabled)
+            guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
+                it.toExpr()
+            }, this::class.simpleName, method.declaringClass.name, method.name, r.message, method.degrade?.fallbackMethod)
         return methodGuard.degradeHandler!!.handleFallback(r, args)
     }
 
