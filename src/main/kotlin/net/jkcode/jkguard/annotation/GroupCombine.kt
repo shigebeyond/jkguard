@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.rpc.client.combiner.annotation
 
+import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
 /**
@@ -26,5 +27,5 @@ annotation class GroupCombine(
  */
 public val Method.groupCombine: GroupCombine?
     get(){
-        return getAnnotation(GroupCombine::class.java)
+        return getCachedAnnotation()
     }

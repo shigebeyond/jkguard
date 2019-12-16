@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.rpc.client.combiner.annotation
 
+import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
 /**
@@ -18,5 +19,5 @@ annotation class KeyCombine()
  */
 public val Method.keyCombine: KeyCombine?
     get(){
-        return getAnnotation(KeyCombine::class.java)
+        return getCachedAnnotation()
     }

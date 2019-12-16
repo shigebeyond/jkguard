@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.rpc.client.combiner.annotation
 
+import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
 /**
@@ -23,5 +24,5 @@ annotation class Cache(
  */
 public val Method.cache: Cache?
     get(){
-        return getAnnotation(Cache::class.java)
+        return getCachedAnnotation()
     }

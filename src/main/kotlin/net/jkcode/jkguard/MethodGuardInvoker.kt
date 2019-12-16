@@ -109,21 +109,22 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
     public override fun invokeAfterCache(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
         // 1 计量
         // 1.1 添加总计数
-        methodGuard.measurer?.currentBucket()?.addTotal()
+        val measurer = methodGuard.measurer
+        measurer?.currentBucket()?.addTotal()
         val startTime = currMillis()
 
         // 2 真正的调用
         val resFuture = invokeAfterGuard(method, obj, args).whenComplete { r, e ->
             // 1.2 添加请求耗时
-            methodGuard.measurer?.currentBucket()?.addRt(currMillis() - startTime)
+            measurer?.currentBucket()?.addRt(currMillis() - startTime)
 
             if (e == null) {
                 // 1.3 添加成功计数
-                methodGuard.measurer?.currentBucket()?.addSuccess()
+                measurer?.currentBucket()?.addSuccess()
                 r
             } else {
                 // 1.4 添加异常计数
-                methodGuard.measurer?.currentBucket()?.addException()
+                measurer?.currentBucket()?.addException()
 
                 // 3 处理异常: 调用后备处理
                 handleException(methodGuard, method, args, e!!)

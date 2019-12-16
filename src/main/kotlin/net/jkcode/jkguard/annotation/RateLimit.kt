@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.rpc.client.combiner.annotation
 
+import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
 /**
@@ -22,5 +23,5 @@ annotation class RateLimit(
  */
 public val Method.rateLimit: RateLimit?
     get(){
-        return getAnnotation(RateLimit::class.java)
+        return getCachedAnnotation()
     }

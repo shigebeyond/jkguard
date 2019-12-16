@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.rpc.client.combiner.annotation
 
+import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
 /**
@@ -18,5 +19,5 @@ annotation class Degrade(
  */
 public val Method.degrade: Degrade?
     get(){
-        return getAnnotation(Degrade::class.java)
+        return getCachedAnnotation()
     }

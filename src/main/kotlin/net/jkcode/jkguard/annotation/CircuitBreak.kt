@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.rpc.client.combiner.annotation
 
 import net.jkcode.jkguard.circuit.CircuitBreakType
+import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
 /**
@@ -23,5 +24,5 @@ annotation class CircuitBreak(
  */
 public val Method.circuitBreak: CircuitBreak?
     get(){
-        return getAnnotation(CircuitBreak::class.java)
+        return getCachedAnnotation()
     }

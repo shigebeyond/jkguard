@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.rpc.client.combiner.annotation
 
+import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
 /**
@@ -20,5 +21,5 @@ annotation class Metric(
  */
 public val Method.metric: Metric?
     get(){
-        return getAnnotation(Metric::class.java)
+        return getCachedAnnotation()
     }
