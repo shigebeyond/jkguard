@@ -12,6 +12,7 @@ import net.jkcode.jkguard.degrade.IDegradeHandler
 import net.jkcode.jkguard.measure.HashedWheelMeasurer
 import net.jkcode.jkguard.measure.IMeasurer
 import net.jkcode.jkguard.rate.IRateLimiter
+import net.jkcode.jkutil.common.getFullSignature
 import java.lang.reflect.Method
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -35,7 +36,7 @@ open class MethodGuard(
         if(annotation == null)
             null
         else {
-            val msg = "方法[${method.getSignature(true)}]声明了注解@KeyCombine"
+            val msg = "方法[${method.getFullSignature()}]声明了注解@KeyCombine"
             // 检查方法参数
             if (method.parameterTypes.size != 1)
                 throw GuardException("${msg}必须有唯一的参数")
@@ -62,7 +63,7 @@ open class MethodGuard(
         else {
             // 找到批量操作的方法
             val batchMethod = method.declaringClass.methods.first { it.name == annotation.batchMethod }
-            val msg = "方法[${method.getSignature(true)}]的注解@GroupCombine中声明的batchMethod=[${annotation.batchMethod}]"
+            val msg = "方法[${method.getFullSignature()}]的注解@GroupCombine中声明的batchMethod=[${annotation.batchMethod}]"
             if (batchMethod == null)
                 throw GuardException("${msg}不存在")
             // 检查方法参数
@@ -134,15 +135,15 @@ open class MethodGuard(
         else {
             // 获得后备方法
             val fallbackMethod = method.declaringClass.methods.first { it.name == annotation.fallbackMethod }
-            val msg = "源方法 ${method.getSignature(true)}的注解@Degrade声明了fallbackMethod=[${annotation.fallbackMethod}]"
+            val msg = "源方法 ${method.getFullSignature()}的注解@Degrade声明了fallbackMethod=[${annotation.fallbackMethod}]"
             if(fallbackMethod == null)
                 throw GuardException("${msg}不存在")
             // 检查参数类型: 注 != 不好使
             if (!Arrays.equals(method.parameterTypes, fallbackMethod.parameterTypes))
-                throw GuardException("$msg 与后备方法 ${fallbackMethod.getSignature(true)} 的参数类型不一致")
+                throw GuardException("$msg 与后备方法 ${fallbackMethod.getFullSignature()} 的参数类型不一致")
             // 检查返回类型
             if (method.returnType != fallbackMethod.returnType)
-                throw GuardException("$msg 与后备方法 ${fallbackMethod.getSignature(true)} 的返回值类型不一致")
+                throw GuardException("$msg 与后备方法 ${fallbackMethod.getFullSignature()} 的返回值类型不一致")
 
             object : IDegradeHandler {
                 /**
@@ -167,7 +168,7 @@ open class MethodGuard(
         if(annotation == null)
             null
         else if(measurer == null)
-            throw GuardException("方法中${method.getSignature(true)}的注解CircuitBreak, 必须配合有注解@Metric")
+            throw GuardException("方法中${method.getFullSignature()}的注解CircuitBreak, 必须配合有注解@Metric")
         else
              CircuitBreaker(annotation, measurer!!)
     }
