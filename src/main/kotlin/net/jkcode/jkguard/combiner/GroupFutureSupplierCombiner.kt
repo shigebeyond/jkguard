@@ -1,6 +1,6 @@
 package net.jkcode.jkguard.combiner
 
-import net.jkcode.jkutil.common.getProperty
+import net.jkcode.jkutil.common.getInheritProperty
 import net.jkcode.jkutil.flusher.RequestQueueFlusher
 import net.jkcode.jksoa.rpc.client.combiner.annotation.GroupCombine
 import java.util.concurrent.CompletableFuture
@@ -98,7 +98,7 @@ open class GroupFutureSupplierCombiner<RequestArgumentType /* 请求参数类型
             }
         }
 
-        val prop = clazz.kotlin.getProperty(field) as KProperty1<Any, T>
+        val prop = clazz.kotlin.getInheritProperty(field) as KProperty1<Any, T>
         return prop::get
     }
 }
