@@ -12,8 +12,8 @@ import java.util.concurrent.CompletableFuture
  */
 class GroupRunCombiner<RequestArgumentType/* 请求参数类型 */>(
         flushQuota: Int = 100 /* 触发刷盘的队列大小 */,
-        flushTimeoutMillis: Long = 100 /* 触发刷盘的定时时间 */,
-        protected val batchRun:(List<RequestArgumentType>) -> Unit /* 批量无值操作 */
+        flushTimeoutMillis: Long = 100, // 触发刷盘的定时时间
+        protected val batchRun:(List<RequestArgumentType>) -> Unit // 批量无值操作
 //): GroupFutureRunCombiner<RequestArgumentType>(flushQuota, flushTimeoutMillis, toFutureSupplier(batchRun)){ // 实现1: 继承GroupFutureRunCombiner, 操作转异步
 ): UnitRequestQueueFlusher<RequestArgumentType>(flushQuota, flushTimeoutMillis){ // 实现2: 实现RequestQueueFlusher, 不转异步, 反正handleFlush()也是在线程池中执行
 
