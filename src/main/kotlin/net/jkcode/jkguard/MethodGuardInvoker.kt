@@ -1,5 +1,6 @@
 package net.jkcode.jkguard
 
+import co.paralleluniverse.fibers.Suspendable
 import net.jkcode.jkutil.common.currMillis
 import net.jkcode.jkutil.common.resultFromFuture
 import net.jkcode.jkutil.common.toExpr
@@ -43,6 +44,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
+    @Suspendable
     public override fun guardInvoke(method: Method, proxy: Any, args: Array<Any?>): Any? {
         if(guardLogger.isDebugEnabled)
             guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", ")") {
@@ -76,6 +78,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
+    @Suspendable
     public override fun invokeAfterCombine(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
         // 1 断路
         if(methodGuard.circuitBreaker != null)
@@ -106,6 +109,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
+    @Suspendable
     public override fun invokeAfterCache(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
         // 1 计量
         // 1.1 添加总计数
