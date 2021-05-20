@@ -42,7 +42,7 @@ buildscript {
 }
 
 project(':') {
-    group 'net.jkcode.jkmvc'
+    group 'net.jkcode'
     version '1.9.0'
 
     apply plugin: 'java'
@@ -106,7 +106,7 @@ project(':') {
         //compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     
         // jkutil
-        compile "net.jkcode.jkmvc:jkutil:$jkutil_version"
+        compile "net.jkcode:jkutil:$jkutil_version"
 
         // test
         testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
