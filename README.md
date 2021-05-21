@@ -1,5 +1,4 @@
 # Jkguard
-
 Jkguard is the application guardian, which provides guardian functions, such as request combining / traffic statistics / circuit breaking / rate limiting / degradation / caching, to to guarantee reliability of application.
 
 jkguard 是应用守护者, 提供了请求合并/流量统计/熔断/限流/降级/缓存等多功能的守护, 能够在一个或多个依赖同时出现问题时保证系统依然可用。
@@ -12,13 +11,11 @@ jkguard 是应用守护者, 提供了请求合并/流量统计/熔断/限流/降
 6. 缓存: 某些请求结果可缓存, 则有缓存则读缓存, 没有缓存再读db.
 
 ## 特性
-
 1. 简单, 易用, 轻量, 易扩展;
 2. 2种方式实现守护: 1 直接调用守护处理类 2 通过方法级注解. 两者实现效果一样, 前者更灵活, 后者更简单.
 3. 无缝对接rpc的client端与server端, 直接守护服务调用.
 
 ## 背景
-
 在大中型分布式系统中，一个服务通常会依赖于其他多个服务. 
 
 对于单个服务而言, 在有限资源的情况下，所能提供的单位时间服务能力也是有限的。假如超过承受能力，可能会带来整个服务的崩溃.
@@ -28,7 +25,6 @@ jkguard 是应用守护者, 提供了请求合并/流量统计/熔断/限流/降
 为了避免系统压力大时引发服务雪崩，就需要在系统中引入限流，降级和熔断等工具, 从而提高系统的稳定性与可靠性.
 
 # 快速入门
-
 为了更简单的应用 jkguard, 框架分别针对请求合并/流量统计/熔断/限流/降级/缓存等, 提供了方法级别的注解, 能够很便捷在方法上设置守护逻辑.
 
 方法级的守护注解有:
@@ -41,6 +37,21 @@ jkguard 是应用守护者, 提供了请求合并/流量统计/熔断/限流/降
 7. `@Cache` -- 缓存, 对应实例化与调用处理类 `ICacheHandler`
 
 这些注解可应用到jkmvc/jksoa框架中
+
+## 添加依赖
+1. gradle
+```
+compile "net.jkcode:jkguard:1.9.0"
+```
+
+2. maven
+```
+<dependency>
+    <groupId>net.jkcode</groupId>
+    <artifactId>jkguard</artifactId>
+    <version>1.9.0</version>
+</dependency>
+```
 
 ## 应用到jksoa框架
 这些注解只针对rpc服务类上的方法, 当然可应用在服务接口, 或服务实现类.
