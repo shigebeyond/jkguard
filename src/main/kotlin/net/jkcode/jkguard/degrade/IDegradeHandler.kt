@@ -5,7 +5,7 @@ package net.jkcode.jkguard.degrade
  * @author shijianhang<772910474@qq.com>
  * @date 2019-04-19 9:19 AM
  */
-interface IDegradeHandler {
+abstract class IDegradeHandler(public val fallbackMethod: String) {
 
     /**
      * 处理异常后备
@@ -14,6 +14,6 @@ interface IDegradeHandler {
      * @param args 方法调用的参数
      * @return
      */
-    fun handleFallback(t: Throwable?, args: Array<Any?>): Any?
+    abstract fun handleFallback(t: Throwable?, args: Array<Any?>): Any?
 
 }

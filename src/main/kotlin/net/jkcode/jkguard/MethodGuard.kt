@@ -145,7 +145,7 @@ open class MethodGuard(
             if (method.returnType != fallbackMethod.returnType)
                 throw GuardException("$msg 与后备方法 ${fallbackMethod.getFullSignature()} 的返回值类型不一致")
 
-            object : IDegradeHandler {
+            object : IDegradeHandler(annotation.fallbackMethod) {
                 /**
                  * 处理异常后备
                  * @param t 异常. 如果为null则为自动降级, 否则为异常降级

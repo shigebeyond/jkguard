@@ -154,7 +154,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
         if(guardLogger.isDebugEnabled)
             guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
                 it.toExpr()
-            }, this::class.simpleName, method.declaringClass.name, method.name, r.message, method.degrade?.fallbackMethod)
+            }, this::class.simpleName, method.declaringClass.name, method.name, r.message, methodGuard.degradeHandler!!.fallbackMethod)
         return methodGuard.degradeHandler!!.handleFallback(r, args)
     }
 
