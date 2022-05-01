@@ -7,7 +7,6 @@ import net.jkcode.jkguard.combiner.KeyFutureSupplierCombiner
 import net.jkcode.jkguard.degrade.IDegradeHandler
 import net.jkcode.jkguard.measure.IMeasurer
 import net.jkcode.jkguard.rate.IRateLimiter
-import java.lang.reflect.Method
 
 /**
  * 方法调用的守护者
@@ -19,12 +18,13 @@ interface IMethodGuard {
     /**
      * 守护的目标方法
      */
-    val method: Method
+    val method: IMethodMeta
 
     /**
      * 带守护的方法调用者
      */
     val handler: IMethodGuardInvoker
+        get() = method.handler
 
     /**
      * 方法调用的对象

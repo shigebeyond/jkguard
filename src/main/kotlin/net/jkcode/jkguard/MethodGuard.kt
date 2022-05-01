@@ -1,7 +1,5 @@
 package net.jkcode.jkguard
 
-import net.jkcode.jkutil.common.getSignature
-import net.jkcode.jkutil.common.trySupplierFuture
 import net.jkcode.jkguard.annotation.*
 import net.jkcode.jkguard.cache.ICacheHandler
 import net.jkcode.jkguard.circuit.CircuitBreaker
@@ -12,7 +10,7 @@ import net.jkcode.jkguard.degrade.IDegradeHandler
 import net.jkcode.jkguard.measure.HashedWheelMeasurer
 import net.jkcode.jkguard.measure.IMeasurer
 import net.jkcode.jkguard.rate.IRateLimiter
-import net.jkcode.jkutil.common.getFullSignature
+import net.jkcode.jkutil.common.trySupplierFuture
 import java.lang.reflect.Method
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -23,20 +21,21 @@ import java.util.concurrent.CompletableFuture
  * @date 2019-04-19 12:26 PM
  */
 open class MethodGuard(
-        public override val method: Method, // 被守护的方法
-        public override val handler: IMethodGuardInvoker // 带守护的方法调用者
+        public override val method: IMethodMeta // 被守护的方法
 ) : IMethodGuard {
+
+    constructor(method: Method, handler: IMethodGuardInvoker): this(MethodMeta(method, handler))
 
     /**
      * 方法的key合并器
      *    兼容方法返回类型是CompletableFuture
      */
     public override val keyCombiner: KeyFutureSupplierCombiner<Any, Any?>? by lazy{
-        val annotation = method.keyCombine
+        val annotation = method.getAnnotation(KeyCombine::class.java)
         if(annotation == null)
             null
         else {
-            val msg = "方法[${method.getFullSignature()}]声明了注解@KeyCombine"
+            val msg = "方法[${method.fullSignature}]声明了注解@KeyCombine"
             // 检查方法参数
             if (method.parameterTypes.size != 1)
                 throw GuardException("${msg}必须有唯一的参数")
@@ -57,13 +56,13 @@ open class MethodGuard(
      *    兼容方法返回类型是CompletableFuture
      */
     public override val groupCombiner: GroupFutureSupplierCombiner<Any, Any?, Any>? by lazy{
-        val annotation = method.groupCombine
+        val annotation = method.getAnnotation(GroupCombine::class.java)
         if(annotation == null)
             null
         else {
             // 找到批量操作的方法
-            val batchMethod = method.declaringClass.methods.first { it.name == annotation.batchMethod }
-            val msg = "方法[${method.getFullSignature()}]的注解@GroupCombine中声明的batchMethod=[${annotation.batchMethod}]"
+            val batchMethod = method.getBrotherMethod(annotation.batchMethod)
+            val msg = "方法[${method.fullSignature}]的注解@GroupCombine中声明的batchMethod=[${annotation.batchMethod}]"
             if (batchMethod == null)
                 throw GuardException("${msg}不存在")
             // 检查方法参数
@@ -89,7 +88,7 @@ open class MethodGuard(
      * 缓存处理器
      */
     public override val cacheHandler: ICacheHandler? by lazy{
-        val annotation = method.cache
+        val annotation = method.getAnnotation(Cache::class.java)
         if(annotation == null)
             null
         else {
@@ -110,7 +109,7 @@ open class MethodGuard(
      * 限流器
      */
     public override val rateLimiter: IRateLimiter? by lazy{
-        val annotation = method.rateLimit
+        val annotation = method.getAnnotation(RateLimit::class.java)
         IRateLimiter.create(annotation)
     }
 
@@ -118,7 +117,7 @@ open class MethodGuard(
      * 计量器
      */
     public override val measurer: IMeasurer? by lazy{
-        val annotation = method.metric
+        val annotation = method.getAnnotation(Metric::class.java)
         if(annotation == null)
             null
         else
@@ -129,21 +128,21 @@ open class MethodGuard(
      * 降级处理器
      */
     public override val degradeHandler: IDegradeHandler? by lazy{
-        val annotation = method.degrade
+        val annotation = method.getAnnotation(Degrade::class.java)
         if(annotation == null)
             null
         else {
             // 获得后备方法
-            val fallbackMethod = method.declaringClass.methods.first { it.name == annotation.fallbackMethod }
-            val msg = "源方法 ${method.getFullSignature()}的注解@Degrade声明了fallbackMethod=[${annotation.fallbackMethod}]"
+            val fallbackMethod = method.getBrotherMethod(annotation.fallbackMethod)
+            val msg = "源方法 ${method.fullSignature}的注解@Degrade声明了fallbackMethod=[${annotation.fallbackMethod}]"
             if(fallbackMethod == null)
                 throw GuardException("${msg}不存在")
             // 检查参数类型: 注 != 不好使
             if (!Arrays.equals(method.parameterTypes, fallbackMethod.parameterTypes))
-                throw GuardException("$msg 与后备方法 ${fallbackMethod.getFullSignature()} 的参数类型不一致")
+                throw GuardException("$msg 与后备方法 ${fallbackMethod.fullSignature} 的参数类型不一致")
             // 检查返回类型
             if (method.returnType != fallbackMethod.returnType)
-                throw GuardException("$msg 与后备方法 ${fallbackMethod.getFullSignature()} 的返回值类型不一致")
+                throw GuardException("$msg 与后备方法 ${fallbackMethod.fullSignature} 的返回值类型不一致")
 
             object : IDegradeHandler(annotation.fallbackMethod) {
                 /**
@@ -164,11 +163,11 @@ open class MethodGuard(
      * 断路器
      */
     public override val circuitBreaker: ICircuitBreaker? by lazy{
-        val annotation = method.circuitBreak
+        val annotation = method.getAnnotation(CircuitBreak::class.java)
         if(annotation == null)
             null
         else if(measurer == null)
-            throw GuardException("方法中${method.getFullSignature()}的注解CircuitBreak, 必须配合有注解@Metric")
+            throw GuardException("方法中${method.fullSignature}的注解CircuitBreak, 必须配合有注解@Metric")
         else
              CircuitBreaker(annotation, measurer!!)
     }

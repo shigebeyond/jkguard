@@ -2,11 +2,7 @@ package net.jkcode.jkguard
 
 import co.paralleluniverse.fibers.Suspendable
 import net.jkcode.jkutil.common.currMillis
-import net.jkcode.jkutil.common.resultFromFuture
 import net.jkcode.jkutil.common.toExpr
-import net.jkcode.jkguard.annotation.degrade
-import java.lang.reflect.Method
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 带守护的方法调用者
@@ -21,22 +17,6 @@ import java.util.concurrent.ConcurrentHashMap
 abstract class MethodGuardInvoker : IMethodGuardInvoker {
 
     /**
-     * 方法守护者
-     */
-    protected val methodGuards: ConcurrentHashMap<Method, MethodGuard> = ConcurrentHashMap();
-
-    /**
-     * 获得方法守护者
-     * @param method
-     * @return
-     */
-    public override fun getMethodGuard(method: Method): IMethodGuard {
-        return methodGuards.getOrPut(method){
-            MethodGuard(method, this)
-        }
-    }
-
-    /**
      * 守护方法调用
      *
      * @param method 方法
@@ -45,24 +25,24 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @return 结果
      */
     @Suspendable
-    public override fun guardInvoke(method: Method, proxy: Any, args: Array<Any?>): Any? {
+    public override fun guardInvoke(method: IMethodMeta, proxy: Any, args: Array<Any?>): Any? {
         if(guardLogger.isDebugEnabled)
             guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", ")") {
                 it.toExpr()
-            }, this::class.simpleName, method.declaringClass.name, method.name)
+            }, this::class.simpleName, method.clazzName, method.methodName)
 
         // 1 合并调用
         // 1.1 根据group来合并请求
-        val methodGuard = getMethodGuard(method) // 获得方法守护者
+        val methodGuard = method.methodGuard // 获得方法守护者
         if (methodGuard.groupCombiner != null) {
             val resFuture = methodGuard.groupCombiner!!.add(args.single()!!)
-            return method.resultFromFuture(resFuture)
+            return method.getResultFromFuture(resFuture)
         }
 
         // 1.2 根据key来合并请求
         if (methodGuard.keyCombiner != null) {
             val resFuture = methodGuard.keyCombiner!!.add(args.single()!!)
-            return method.resultFromFuture(resFuture)
+            return method.getResultFromFuture(resFuture)
         }
 
         // 2 合并之后的调用
@@ -79,7 +59,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @return 结果
      */
     @Suspendable
-    public override fun invokeAfterCombine(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
+    public override fun invokeAfterCombine(methodGuard: IMethodGuard, method: IMethodMeta, obj: Any, args: Array<Any?>): Any? {
         // 1 断路
         if(methodGuard.circuitBreaker != null)
             if(!methodGuard.circuitBreaker!!.acquire())
@@ -93,7 +73,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
         // 3 缓存
         if(methodGuard.cacheHandler != null) {
             val resFuture = methodGuard.cacheHandler!!.cacheOrLoad(args)
-            return method.resultFromFuture(resFuture)
+            return method.getResultFromFuture(resFuture)
         }
 
         // 4 缓存之后的调用
@@ -110,7 +90,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @return 结果
      */
     @Suspendable
-    public override fun invokeAfterCache(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
+    public override fun invokeAfterCache(methodGuard: IMethodGuard, method: IMethodMeta, obj: Any, args: Array<Any?>): Any? {
         // 1 计量
         // 1.1 添加总计数
         val measurer = methodGuard.measurer
@@ -136,7 +116,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
         }
 
         //处理结果
-        return method.resultFromFuture(resFuture)
+        return method.getResultFromFuture(resFuture)
     }
 
     /**
@@ -147,14 +127,14 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @param r 异常
      * @return
      */
-    protected fun handleException(methodGuard: IMethodGuard, method: Method, args: Array<Any?>, r: Throwable): Any? {
+    protected fun handleException(methodGuard: IMethodGuard, method: IMethodMeta, args: Array<Any?>, r: Throwable): Any? {
         if (methodGuard.degradeHandler == null)
             throw r
 
         if(guardLogger.isDebugEnabled)
             guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
                 it.toExpr()
-            }, this::class.simpleName, method.declaringClass.name, method.name, r.message, methodGuard.degradeHandler!!.fallbackMethod)
+            }, this::class.simpleName, method.clazzName, method.methodName, r.message, methodGuard.degradeHandler!!.fallbackMethod)
         return methodGuard.degradeHandler!!.handleFallback(r, args)
     }
 
