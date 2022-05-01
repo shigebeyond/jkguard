@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.client.combiner.annotation
+package net.jkcode.jkguard.annotation
 
 import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method

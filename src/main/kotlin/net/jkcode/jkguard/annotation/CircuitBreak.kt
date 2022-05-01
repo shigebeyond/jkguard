@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.client.combiner.annotation
+package net.jkcode.jkguard.annotation
 
 import net.jkcode.jkguard.circuit.CircuitBreakType
 import net.jkcode.jkutil.common.getCachedAnnotation

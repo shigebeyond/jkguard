@@ -2,7 +2,7 @@ package net.jkcode.jkguard
 
 import net.jkcode.jkutil.common.getSignature
 import net.jkcode.jkutil.common.trySupplierFuture
-import net.jkcode.jksoa.rpc.client.combiner.annotation.*
+import net.jkcode.jkguard.annotation.*
 import net.jkcode.jkguard.cache.ICacheHandler
 import net.jkcode.jkguard.circuit.CircuitBreaker
 import net.jkcode.jkguard.circuit.ICircuitBreaker

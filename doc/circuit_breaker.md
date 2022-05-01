@@ -73,7 +73,7 @@ package net.jkcode.jkguard.circuit
 import net.jkcode.jkmvc.common.currMillis
 import net.jkcode.jkguard.measure.IMeasurer
 import net.jkcode.jkguard.rate.IRateLimiter
-import net.jkcode.jksoa.rpc.client.combiner.annotation.CircuitBreak
+import net.jkcode.jkguard.annotation.CircuitBreak
 
 /**
  * 断路器

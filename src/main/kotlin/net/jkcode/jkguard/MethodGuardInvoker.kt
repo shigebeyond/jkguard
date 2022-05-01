@@ -4,7 +4,7 @@ import co.paralleluniverse.fibers.Suspendable
 import net.jkcode.jkutil.common.currMillis
 import net.jkcode.jkutil.common.resultFromFuture
 import net.jkcode.jkutil.common.toExpr
-import net.jkcode.jksoa.rpc.client.combiner.annotation.degrade
+import net.jkcode.jkguard.annotation.degrade
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 
