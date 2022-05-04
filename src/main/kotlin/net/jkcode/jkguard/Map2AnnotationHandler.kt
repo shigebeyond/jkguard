@@ -9,9 +9,11 @@ import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 
 /**
- * json转注解的代理调用处理器
+ * map转注解的代理调用处理器
  */
-class Json2AnnotationHandler(json: String) : InvocationHandler {
+class Map2AnnotationHandler(
+        protected val attrs: Map<String, Any?> // 属性值, key是注解属性名, 也是注解接口的方法名, value是注解属性值
+) : InvocationHandler {
 
     companion object{
 
@@ -22,7 +24,17 @@ class Json2AnnotationHandler(json: String) : InvocationHandler {
          * @return 注解实例
          */
         public fun <T> json2Annotation(clazz: Class<T>, json: String): T {
-            return Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(clazz), Json2AnnotationHandler(json)) as T
+            return map2Annotation(clazz, JSON.parse(json) as JSONObject)
+        }
+
+        /**
+         * 构建注解实例
+         * @param clazz 注解类
+         * @param map
+         * @return 注解实例
+         */
+        public fun <T> map2Annotation(clazz: Class<T>, attrs: Map<String, Any?>): T {
+            return Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(clazz), Map2AnnotationHandler(attrs)) as T
         }
 
         /**
@@ -34,13 +46,6 @@ class Json2AnnotationHandler(json: String) : InvocationHandler {
             return json2Annotation(T::class.java, json)
         }
     }
-
-    /**
-     * 属性值
-     *   key是注解属性名, 也是注解接口的方法名
-     *   value是注解属性值
-     */
-    protected val attrs: Map<String, Any?> = JSON.parse(json) as JSONObject
 
     /**
      * 方法代理处理

@@ -1,5 +1,6 @@
 package net.jkcode.jkguard
 
+import co.paralleluniverse.fibers.Suspendable
 import net.jkcode.jkguard.annotation.*
 import net.jkcode.jkguard.cache.ICacheHandler
 import net.jkcode.jkguard.circuit.CircuitBreaker
@@ -37,7 +38,7 @@ open class MethodGuard(
         else {
             val msg = "方法[${method.fullSignature}]声明了注解@KeyCombine"
             // 检查方法参数
-            if (method.parameterTypes.size != 1)
+            if (!method.isPurePhp && method.parameterTypes.size != 1)
                 throw GuardException("${msg}必须有唯一的参数")
 
             // 创建请求合并器
@@ -65,13 +66,16 @@ open class MethodGuard(
             val msg = "方法[${method.fullSignature}]的注解@GroupCombine中声明的batchMethod=[${annotation.batchMethod}]"
             if (batchMethod == null)
                 throw GuardException("${msg}不存在")
-            // 检查方法参数
-            val pt = batchMethod.parameterTypes
-            if (pt.size != 1 || !List::class.java.isAssignableFrom(pt.first()))
-                throw GuardException("${msg}必须有唯一的List类型的参数")
-            // 检查方法返回值
-            if (!List::class.java.isAssignableFrom(batchMethod.returnType) && !CompletableFuture::class.java.isAssignableFrom(batchMethod.returnType))
-                throw GuardException("${msg}必须有的List或CompletableFuture<List>类型的返回值")
+
+            if(!batchMethod.isPurePhp) {
+                // 检查方法参数
+                val pt = batchMethod.parameterTypes
+                if (pt.size != 1 || !List::class.java.isAssignableFrom(pt.first()))
+                    throw GuardException("${msg}必须有唯一的List类型的参数")
+                // 检查方法返回值
+                if (!List::class.java.isAssignableFrom(batchMethod.returnType) && !CompletableFuture::class.java.isAssignableFrom(batchMethod.returnType))
+                    throw GuardException("${msg}必须有的List或CompletableFuture<List>类型的返回值")
+            }
 
             // 创建请求合并器
             GroupFutureSupplierCombiner<Any, Any?, Any>(annotation){ singleArg -> // 单参数的future工厂
@@ -98,6 +102,7 @@ open class MethodGuard(
                  * @param args 方法参数, 用于组成缓存的key, 可以为空
                  * @return
                  */
+                @Suspendable
                 public override fun loadData(args: Array<Any?>): Any? {
                     return handler.invokeAfterCache(this@MethodGuard, method, obj, args)
                 }
@@ -137,12 +142,15 @@ open class MethodGuard(
             val msg = "源方法 ${method.fullSignature}的注解@Degrade声明了fallbackMethod=[${annotation.fallbackMethod}]"
             if(fallbackMethod == null)
                 throw GuardException("${msg}不存在")
-            // 检查参数类型: 注 != 不好使
-            if (!Arrays.equals(method.parameterTypes, fallbackMethod.parameterTypes))
-                throw GuardException("$msg 与后备方法 ${fallbackMethod.fullSignature} 的参数类型不一致")
-            // 检查返回类型
-            if (method.returnType != fallbackMethod.returnType)
-                throw GuardException("$msg 与后备方法 ${fallbackMethod.fullSignature} 的返回值类型不一致")
+
+            if(!method.isPurePhp) {
+                // 检查参数类型: 注 != 不好使
+                if (!Arrays.equals(method.parameterTypes, fallbackMethod.parameterTypes))
+                    throw GuardException("$msg 与后备方法 ${fallbackMethod.fullSignature} 的参数类型不一致")
+                // 检查返回类型
+                if (method.returnType != fallbackMethod.returnType)
+                    throw GuardException("$msg 与后备方法 ${fallbackMethod.fullSignature} 的返回值类型不一致")
+            }
 
             object : IDegradeHandler(annotation.fallbackMethod) {
                 /**

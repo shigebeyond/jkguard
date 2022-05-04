@@ -1,6 +1,8 @@
 package net.jkcode.jkguard
 
+import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 方法元数据
@@ -10,6 +12,13 @@ import java.util.concurrent.CompletableFuture
  * @date 2022-4-27 7:25 PM
  */
 interface IMethodMeta {
+
+    companion object{
+        /**
+         * 方法守护者
+         */
+        protected val methodGuards: ConcurrentHashMap<String, MethodGuard> = ConcurrentHashMap();
+    }
 
     /**
      * 类名
@@ -22,7 +31,7 @@ interface IMethodMeta {
     val methodName: String
 
     /**
-     * 方法签名
+     * 方法签名(rpc用到)
      */
     val methodSignature: String
 
@@ -34,13 +43,20 @@ interface IMethodMeta {
 
     /**
      * 方法参数类型
+     *    会在 degradeHandler/groupCombiner/keyCombiner 用来检查方法的参数与返回值类型
      */
-    val parameterTypes: Array<Class<*>?>
+    val parameterTypes: Array<Class<*>>
 
     /**
      * 返回值类型
      */
     val returnType: Class<*>
+
+    /**
+     * 是否纯php实现
+     *    用来决定是否在 degradeHandler/groupCombiner/keyCombiner 用来检查方法的参数与返回值类型
+     */
+    val isPurePhp: Boolean
 
     /**
      * 带守护的方法调用者
@@ -52,6 +68,11 @@ interface IMethodMeta {
      * 方法守护者
      */
     val methodGuard: IMethodGuard
+        get(){
+            return methodGuards.getOrPut(fullSignature){
+                MethodGuard(this)
+            }
+        }
 
     /**
      * 获得方法注解
@@ -61,7 +82,9 @@ interface IMethodMeta {
     fun <A : Annotation> getAnnotation(annotationClass: Class<A>): A?
 
     /**
-     * 调用方法
+     * 方法处理
+     *    在IMethodGuardInvoker#invokeAfterGuard()中调用
+     *    实现：server端实现是调用包装的原生方法, client端实现是发rpc请求
      */
     fun invoke(obj: Any, vararg args: Any?): Any?
 

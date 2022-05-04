@@ -14,7 +14,7 @@ class AnnotationReflectTests{
 //        val c = RateLimit::class.java
 //        print(c)
 
-        val o = Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(RateLimit::class.java), Json2AnnotationHandler("{\"permitsPerSecond\":\"100.0\",\"stablePeriodSeconds\":\"0\",\"warmupPeriodSeconds\":\"0\"}")) as RateLimit
+        val o = Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(RateLimit::class.java), Map2AnnotationHandler("{\"permitsPerSecond\":\"100.0\",\"stablePeriodSeconds\":\"0\",\"warmupPeriodSeconds\":\"0\"}")) as RateLimit
         println(o.permitsPerSecond)
         println(o.stablePeriodSeconds)
     }

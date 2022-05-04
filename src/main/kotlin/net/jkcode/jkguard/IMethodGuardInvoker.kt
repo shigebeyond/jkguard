@@ -1,5 +1,6 @@
 package net.jkcode.jkguard
 
+import co.paralleluniverse.fibers.Suspendable
 import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
 
@@ -32,6 +33,7 @@ interface IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
+    @Suspendable
     fun guardInvoke(method: Method, proxy: Any, args: Array<Any?>): Any?{
         return guardInvoke(MethodMeta(method, this), proxy, args)
     }
@@ -70,6 +72,7 @@ interface IMethodGuardInvoker {
 
     /**
      * 守护之后真正的调用
+     *    实现：server端实现是调用原生方法, client端实现是发rpc请求
      *
      * @param method 方法
      * @param obj 对象

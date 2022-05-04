@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class MethodMeta(
         protected val method: Method, // java方法
-        public override val handler: IMethodGuardInvoker //
+        public override val handler: IMethodGuardInvoker // 带守护的方法调用者
 ): IMethodMeta {
 
     /**
@@ -31,15 +31,16 @@ class MethodMeta(
         get() = method.name
 
     /**
-     * 方法签名
+     * 方法签名(rpc用到)
      */
     override val methodSignature: String
         get() = method.getSignature()
 
     /**
      * 方法参数类型
+     *    会在 degradeHandler/groupCombiner/keyCombiner 用来检查方法的参数与返回值类型
      */
-    override val parameterTypes: Array<Class<*>?>
+    override val parameterTypes: Array<Class<*>>
         get() = method.parameterTypes
 
     /**
@@ -49,14 +50,11 @@ class MethodMeta(
         get() = method.returnType
 
     /**
-     * 方法守护者
+     * 是否纯php实现
+     *    用来决定是否在 degradeHandler/groupCombiner/keyCombiner 用来检查方法的参数与返回值类型
      */
-    override val methodGuard: IMethodGuard
-        get(){
-            return methodGuards.getOrPut(method){
-                MethodGuard(this)
-            }
-        }
+    override val isPurePhp: Boolean
+        get() = false
 
     /**
      * 获得方法注解
@@ -68,7 +66,9 @@ class MethodMeta(
     }
 
     /**
-     * 调用方法
+     * 方法处理
+     *    在IMethodGuardInvoker#invokeAfterGuard()中调用
+     *    实现：server端实现是调用包装的原生方法, client端实现是发rpc请求
      */
     override fun invoke(obj: Any, vararg args: Any?): Any? {
         return method.invoke(obj, *args)
@@ -91,18 +91,7 @@ class MethodMeta(
      * @return
      */
     override fun getBrotherMethod(name: String): IMethodMeta{
-        val brotherMethod = method.declaringClass.methods.first {
-            it.name == name
-        }
+        val brotherMethod = method.declaringClass.getMethodByName(name)!!
         return MethodMeta(brotherMethod, handler)
-    }
-
-
-    companion object{
-
-        /**
-         * 方法守护者
-         */
-        protected val methodGuards: ConcurrentHashMap<Method, MethodGuard> = ConcurrentHashMap();
     }
 }
