@@ -1,5 +1,6 @@
 package net.jkcode.jkguard.annotation
 
+import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
@@ -20,4 +21,12 @@ annotation class Degrade(
 public val Method.degrade: Degrade?
     get(){
         return getCachedAnnotation()
+    }
+
+/**
+ * 获得降级的注解
+ */
+public val IMethodMeta.degrade: Degrade?
+    get(){
+        return getAnnotation()
     }

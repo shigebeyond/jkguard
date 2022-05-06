@@ -1,5 +1,6 @@
 package net.jkcode.jkguard.annotation
 
+import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
@@ -28,4 +29,12 @@ annotation class GroupCombine(
 public val Method.groupCombine: GroupCombine?
     get(){
         return getCachedAnnotation()
+    }
+
+/**
+ * 获得group合并的注解
+ */
+public val IMethodMeta.groupCombine: GroupCombine?
+    get(){
+        return getAnnotation()
     }

@@ -1,5 +1,6 @@
 package net.jkcode.jkguard.annotation
 
+import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
@@ -25,4 +26,12 @@ annotation class Cache(
 public val Method.cache: Cache?
     get(){
         return getCachedAnnotation()
+    }
+
+/**
+ * 获得缓存的注解
+ */
+public val IMethodMeta.cache: Cache?
+    get(){
+        return getAnnotation()
     }

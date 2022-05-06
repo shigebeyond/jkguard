@@ -1,17 +1,19 @@
 package net.jkcode.jkguard
 
-import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 方法元数据
  *   为了兼容java方法与php方法，才抽取的IMethodMeta
+ *   由于 getAnnotation() 是inline, 因此该接口类改为抽象类
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2022-4-27 7:25 PM
  */
-interface IMethodMeta {
+abstract class IMethodMeta(
+        public val handler: IMethodGuardInvoker // 带守护的方法调用者, 要传递给 MethodGuard
+) {
 
     companion object{
         /**
@@ -23,17 +25,17 @@ interface IMethodMeta {
     /**
      * 类名
      */
-    val clazzName: String
+    abstract val clazzName: String
 
     /**
      * 方法名
      */
-    val methodName: String
+    abstract val methodName: String
 
     /**
      * 方法签名(rpc用到)
      */
-    val methodSignature: String
+    abstract val methodSignature: String
 
     /**
      * 带类名的方法签名
@@ -45,24 +47,18 @@ interface IMethodMeta {
      * 方法参数类型
      *    会在 degradeHandler/groupCombiner/keyCombiner 用来检查方法的参数与返回值类型
      */
-    val parameterTypes: Array<Class<*>>
+    abstract val parameterTypes: Array<Class<*>>
 
     /**
      * 返回值类型
      */
-    val returnType: Class<*>
+    abstract val returnType: Class<*>
 
     /**
      * 是否纯php实现
      *    用来决定是否在 degradeHandler/groupCombiner/keyCombiner 用来检查方法的参数与返回值类型
      */
-    val isPurePhp: Boolean
-
-    /**
-     * 带守护的方法调用者
-     *   传递给 MethodGuard
-     */
-    val handler: IMethodGuardInvoker
+    abstract val isPurePhp: Boolean
 
     /**
      * 方法守护者
@@ -79,14 +75,22 @@ interface IMethodMeta {
      * @param annotationClass 注解类
      * @return
      */
-    fun <A : Annotation> getAnnotation(annotationClass: Class<A>): A?
+    abstract fun <A : Annotation> getAnnotation(annotationClass: Class<A>): A?
+
+    /**
+     * 获得方法注解
+     * @return
+     */
+    public inline fun <reified A : Annotation> getAnnotation(): A?{
+        return getAnnotation(A::class.java)
+    }
 
     /**
      * 方法处理
      *    在IMethodGuardInvoker#invokeAfterGuard()中调用
      *    实现：server端实现是调用包装的原生方法, client端实现是发rpc请求
      */
-    fun invoke(obj: Any, vararg args: Any?): Any?
+    abstract fun invoke(obj: Any, vararg args: Any?): Any?
 
     /**
      * 从CompletableFuture获得方法结果值
@@ -94,13 +98,13 @@ interface IMethodMeta {
      * @param resFuture
      * @return
      */
-    fun getResultFromFuture(resFuture: CompletableFuture<*>): Any?
+    abstract fun getResultFromFuture(resFuture: CompletableFuture<*>): Any?
 
     /**
      * 获得兄弟方法
      * @param name 兄弟方法名
      * @return
      */
-    fun getBrotherMethod(name: String): IMethodMeta
+    abstract fun getBrotherMethod(name: String): IMethodMeta
 
 }

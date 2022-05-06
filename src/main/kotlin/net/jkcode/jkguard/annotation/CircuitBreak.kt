@@ -1,5 +1,6 @@
 package net.jkcode.jkguard.annotation
 
+import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jkguard.circuit.CircuitBreakType
 import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
@@ -25,4 +26,12 @@ annotation class CircuitBreak(
 public val Method.circuitBreak: CircuitBreak?
     get(){
         return getCachedAnnotation()
+    }
+
+/**
+ * 获得断路的注解
+ */
+public val IMethodMeta.circuitBreak: CircuitBreak?
+    get(){
+        return getAnnotation()
     }

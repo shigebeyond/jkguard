@@ -32,7 +32,7 @@ open class MethodGuard(
      *    兼容方法返回类型是CompletableFuture
      */
     public override val keyCombiner: KeyFutureSupplierCombiner<Any, Any?>? by lazy{
-        val annotation = method.getAnnotation(KeyCombine::class.java)
+        val annotation = method.keyCombine
         if(annotation == null)
             null
         else {
@@ -57,7 +57,7 @@ open class MethodGuard(
      *    兼容方法返回类型是CompletableFuture
      */
     public override val groupCombiner: GroupFutureSupplierCombiner<Any, Any?, Any>? by lazy{
-        val annotation = method.getAnnotation(GroupCombine::class.java)
+        val annotation = method.groupCombine
         if(annotation == null)
             null
         else {
@@ -92,7 +92,7 @@ open class MethodGuard(
      * 缓存处理器
      */
     public override val cacheHandler: ICacheHandler? by lazy{
-        val annotation = method.getAnnotation(Cache::class.java)
+        val annotation = method.cache
         if(annotation == null)
             null
         else {
@@ -114,7 +114,7 @@ open class MethodGuard(
      * 限流器
      */
     public override val rateLimiter: IRateLimiter? by lazy{
-        val annotation = method.getAnnotation(RateLimit::class.java)
+        val annotation = method.rateLimit
         IRateLimiter.create(annotation)
     }
 
@@ -122,7 +122,7 @@ open class MethodGuard(
      * 计量器
      */
     public override val measurer: IMeasurer? by lazy{
-        val annotation = method.getAnnotation(Metric::class.java)
+        val annotation = method.metric
         if(annotation == null)
             null
         else
@@ -133,7 +133,7 @@ open class MethodGuard(
      * 降级处理器
      */
     public override val degradeHandler: IDegradeHandler? by lazy{
-        val annotation = method.getAnnotation(Degrade::class.java)
+        val annotation = method.degrade
         if(annotation == null)
             null
         else {
@@ -171,7 +171,7 @@ open class MethodGuard(
      * 断路器
      */
     public override val circuitBreaker: ICircuitBreaker? by lazy{
-        val annotation = method.getAnnotation(CircuitBreak::class.java)
+        val annotation = method.circuitBreak
         if(annotation == null)
             null
         else if(measurer == null)

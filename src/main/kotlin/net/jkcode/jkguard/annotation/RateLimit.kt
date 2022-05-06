@@ -1,5 +1,6 @@
 package net.jkcode.jkguard.annotation
 
+import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
@@ -24,4 +25,12 @@ annotation class RateLimit(
 public val Method.rateLimit: RateLimit?
     get(){
         return getCachedAnnotation()
+    }
+
+/**
+ * 获得限流的注解
+ */
+public val IMethodMeta.rateLimit: RateLimit?
+    get(){
+        return getAnnotation()
     }

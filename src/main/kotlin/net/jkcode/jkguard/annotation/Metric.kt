@@ -1,5 +1,6 @@
 package net.jkcode.jkguard.annotation
 
+import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
@@ -22,4 +23,12 @@ annotation class Metric(
 public val Method.metric: Metric?
     get(){
         return getCachedAnnotation()
+    }
+
+/**
+ * 获得计量的注解
+ */
+public val IMethodMeta.metric: Metric?
+    get(){
+        return getAnnotation()
     }

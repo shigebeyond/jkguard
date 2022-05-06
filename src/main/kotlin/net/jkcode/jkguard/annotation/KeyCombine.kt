@@ -1,5 +1,6 @@
 package net.jkcode.jkguard.annotation
 
+import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
@@ -20,4 +21,12 @@ annotation class KeyCombine()
 public val Method.keyCombine: KeyCombine?
     get(){
         return getCachedAnnotation()
+    }
+
+/**
+ * 获得key合并的注解
+ */
+public val IMethodMeta.keyCombine: KeyCombine?
+    get(){
+        return getAnnotation()
     }

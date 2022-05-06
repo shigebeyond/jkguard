@@ -15,8 +15,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class MethodMeta(
         protected val method: Method, // java方法
-        public override val handler: IMethodGuardInvoker // 带守护的方法调用者
-): IMethodMeta {
+        handler: IMethodGuardInvoker // 带守护的方法调用者
+): IMethodMeta(handler) {
 
     /**
      * 类名
@@ -90,7 +90,7 @@ class MethodMeta(
      * @param name 兄弟方法名
      * @return
      */
-    override fun getBrotherMethod(name: String): IMethodMeta{
+    override fun getBrotherMethod(name: String): IMethodMeta {
         val brotherMethod = method.declaringClass.getMethodByName(name)!!
         return MethodMeta(brotherMethod, handler)
     }
