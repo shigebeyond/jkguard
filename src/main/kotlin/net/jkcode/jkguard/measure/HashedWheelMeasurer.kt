@@ -53,7 +53,7 @@ class HashedWheelMeasurer(public val bucketCount: Int = 60, // 槽的数量
 
         // 如果当前开始时间<旧开始时间: 时钟回拨, 直接抛异常
         if (startTime < bucket.startTime)
-            throw RuntimeException(String.format("Clock moved backwards.  Refusing to generate id for %d milliseconds", bucket.startTime - startTime))
+            throw RuntimeException(String.format("Clock moved backwards. Fail to get current bucket for %d milliseconds span", bucket.startTime - startTime))
 
         // 如果当前开始时间>旧开始时间: 重置
         if (startTime > bucket.startTime)
