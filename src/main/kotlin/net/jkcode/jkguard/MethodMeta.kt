@@ -67,8 +67,8 @@ class MethodMeta(
 
     /**
      * 方法处理
-     *    在IMethodGuardInvoker#invokeAfterGuard()中调用
-     *    实现：server端实现是调用包装的原生方法, client端实现是发rpc请求
+     *    在server端的IMethodGuardInvoker#invokeAfterGuard()/两端的降级处理中调用
+     *    实现：server端实现是调用包装的本地方法, client端实现是发rpc请求
      */
     override fun invoke(obj: Any, vararg args: Any?): Any? {
         return method.invoke(obj, *args)
@@ -86,7 +86,7 @@ class MethodMeta(
     }
 
     /**
-     * 获得兄弟方法
+     * 获得兄弟方法, 用在获得降级或合并的兄弟方法
      * @param name 兄弟方法名
      * @return
      */
