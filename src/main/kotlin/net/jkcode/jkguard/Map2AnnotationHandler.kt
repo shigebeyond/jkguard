@@ -36,15 +36,6 @@ class Map2AnnotationHandler(
         public fun <T> map2Annotation(clazz: Class<T>, attrs: Map<String, Any?>): T {
             return Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(clazz), Map2AnnotationHandler(clazz, attrs)) as T
         }
-
-        /**
-         * 构建注解实例
-         * @param json
-         * @return 注解实例
-         */
-        public inline fun <reified T> json2Annotation(json: String): T {
-            return json2Annotation(T::class.java, json)
-        }
     }
 
     /**

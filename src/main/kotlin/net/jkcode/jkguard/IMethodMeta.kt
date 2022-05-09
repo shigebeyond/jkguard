@@ -61,7 +61,8 @@ abstract class IMethodMeta(
     abstract val isPurePhp: Boolean
 
     /**
-     * 方法守护者
+     * 方法的守护者
+     *   有缓存
      */
     val methodGuard: IMethodGuard
         get(){
