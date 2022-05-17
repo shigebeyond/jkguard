@@ -27,7 +27,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
     @Suspendable
     public override fun guardInvoke(method: IMethodMeta, proxy: Any, args: Array<Any?>): Any? {
         if(guardLogger.isDebugEnabled)
-            guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", ")") {
+            guardLogger.debug(args.joinToString(", ", "{}守护调用方法: {}.{}(", ")") {
                 it.toExpr()
             }, this::class.simpleName, method.clazzName, method.methodName)
 
@@ -132,7 +132,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
             throw r
 
         if(guardLogger.isDebugEnabled)
-            guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
+            guardLogger.debug(args.joinToString(", ", "{}守护调用方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
                 it.toExpr()
             }, this::class.simpleName, method.clazzName, method.methodName, r.message, methodGuard.degradeHandler!!.fallbackMethod)
         return methodGuard.degradeHandler!!.handleFallback(r, args)
