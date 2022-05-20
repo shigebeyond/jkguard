@@ -17,6 +17,7 @@ class FutureHolder<RequestArgumentType /* 请求参数类型 */, ResponseType /*
     /**
      * 异步结果
      */
+    @Volatile
     protected var future: CompletableFuture<ResponseType>? = null
 
     init {
