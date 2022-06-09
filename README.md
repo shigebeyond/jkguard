@@ -1,9 +1,9 @@
 [GitHub](https://github.com/shigebeyond/jkguard) | [Gitee](https://gitee.com/shigebeyond/jkguard) 
 
 # Jkguard
-Jkguard is the application guardian, which provides guardian functions, such as request combining / traffic statistics / circuit breaking / rate limiting / degradation / caching, to to guarantee reliability of application.
+Jkguard is the network traffic guardian, which provides guardian functions, such as request combining / traffic statistics / circuit breaking / rate limiting / degradation / caching, to to guarantee reliability of application.
 
-jkguard 是应用守护者, 提供了请求合并/流量统计/熔断/限流/降级/缓存等多功能的守护, 能够在一个或多个依赖同时出现问题时保证系统依然可用。
+jkguard 是流量守护者, 提供了请求合并/流量统计/熔断/限流/降级/缓存等多功能的守护, 能够在一个或多个依赖同时出现问题时保证系统依然可用。
 
 1. 请求合并: 将单个请求合并成一个批量请求, 能够降低访问频率, 增加系统吞吐量, 优化处理性能.
 2. 流量统计: 要做熔断, 必先统计流量, 统计指标如请求总数/成功数/异常数/平均耗时等, 可设置某些指标的阀值以触发熔断.
