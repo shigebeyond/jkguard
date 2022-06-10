@@ -150,3 +150,4 @@ interface IGuardService /*: Remote // rmi协议服务接口 */ {
 ## 高级
 9. [架构](doc/architecture.md)
 10. [方法级守护](doc/method_guard.md)
+11. [整合jphp-守护php方法](doc/jphp.md)
