@@ -23,7 +23,7 @@ interface IMethodGuardInvoker {
      * @param method
      * @return
      */
-    fun getCombineInovkeObject(method: IMethodMeta): Any
+    fun getCombineInovkeObject(method: IMethodMeta<*>): Any
 
     /**
      * 守护方法调用 -- 入口
@@ -46,7 +46,7 @@ interface IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    fun guardInvoke(method: IMethodMeta, proxy: Any, args: Array<Any?>): Any?
+    fun guardInvoke(method: IMethodMeta<*>, proxy: Any, args: Array<Any?>): Any?
 
     /**
      * 合并之后的调用
@@ -57,7 +57,7 @@ interface IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    fun invokeAfterCombine(methodGuard: IMethodGuard, method: IMethodMeta, obj: Any, args: Array<Any?>): Any?
+    fun invokeAfterCombine(methodGuard: IMethodGuard, method: IMethodMeta<*>, obj: Any, args: Array<Any?>): Any?
 
     /**
      * 缓存之后的调用
@@ -68,7 +68,7 @@ interface IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    fun invokeAfterCache(methodGuard: IMethodGuard, method: IMethodMeta, obj: Any, args: Array<Any?>): Any?
+    fun invokeAfterCache(methodGuard: IMethodGuard, method: IMethodMeta<*>, obj: Any, args: Array<Any?>): Any?
 
     /**
      * 守护之后真正的调用
@@ -79,5 +79,5 @@ interface IMethodGuardInvoker {
      * @param args 参数
      * @return
      */
-    fun invokeAfterGuard(method: IMethodMeta, obj: Any, args: Array<Any?>): CompletableFuture<Any?>
+    fun invokeAfterGuard(method: IMethodMeta<*>, obj: Any, args: Array<Any?>): CompletableFuture<Any?>
 }

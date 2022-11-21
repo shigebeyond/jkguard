@@ -32,6 +32,6 @@ IMethodMeta (net.jkcode.jkguard)
 在方法守护者`MethodGuard`中，被守护的方法对象指定的是 IMethodMeta 类型，也就代表jkguard中的熔断/降级/限流/合并请求等守护功能都是应用在 IMethodMeta 的API级别，因此也就能守护java/php方法，甚至php的rpc方法(PhpRefererMethod) 
 ```
 open class MethodGuard(
-        public override val method: IMethodMeta // 被守护的方法
+        public override val method: IMethodMeta<*> // 被守护的方法
 ) : IMethodGuard
 ```

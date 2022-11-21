@@ -25,7 +25,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @return 结果
      */
     @Suspendable
-    public override fun guardInvoke(method: IMethodMeta, proxy: Any, args: Array<Any?>): Any? {
+    public override fun guardInvoke(method: IMethodMeta<*>, proxy: Any, args: Array<Any?>): Any? {
         if(guardLogger.isDebugEnabled)
             guardLogger.debug(args.joinToString(", ", "{}守护调用方法: {}.{}(", ")") {
                 it.toExpr()
@@ -59,7 +59,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @return 结果
      */
     @Suspendable
-    public override fun invokeAfterCombine(methodGuard: IMethodGuard, method: IMethodMeta, obj: Any, args: Array<Any?>): Any? {
+    public override fun invokeAfterCombine(methodGuard: IMethodGuard, method: IMethodMeta<*>, obj: Any, args: Array<Any?>): Any? {
         // 1 断路
         if(methodGuard.circuitBreaker != null)
             if(!methodGuard.circuitBreaker!!.acquire())
@@ -90,7 +90,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @return 结果
      */
     @Suspendable
-    public override fun invokeAfterCache(methodGuard: IMethodGuard, method: IMethodMeta, obj: Any, args: Array<Any?>): Any? {
+    public override fun invokeAfterCache(methodGuard: IMethodGuard, method: IMethodMeta<*>, obj: Any, args: Array<Any?>): Any? {
         // 1 计量
         // 1.1 添加总计数
         val measurer = methodGuard.measurer
@@ -98,7 +98,8 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
         val startTime = currMillis()
 
         // 2 真正的调用
-        val resFuture = invokeAfterGuard(method, obj, args).whenComplete { r, e ->
+        val resFuture = invokeAfterGuard(method, obj, args) // 不能直接将 .whenComplete() 赋值给resFuture, 因为 invokeAfterGuard() 兼容php时返回 PhpReturnCompletableFuture, 你链式调用 whenComplete() 时又转为 CompletableFuture
+        resFuture.whenComplete { r, e ->
             // 1.2 添加请求耗时
             measurer?.currentBucket()?.addRt(currMillis() - startTime)
 
@@ -127,7 +128,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @param r 异常
      * @return
      */
-    protected fun handleException(methodGuard: IMethodGuard, method: IMethodMeta, args: Array<Any?>, r: Throwable): Any? {
+    protected fun handleException(methodGuard: IMethodGuard, method: IMethodMeta<*>, args: Array<Any?>, r: Throwable): Any? {
         if (methodGuard.degradeHandler == null)
             throw r
 

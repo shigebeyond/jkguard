@@ -31,7 +31,7 @@ public val Method.circuitBreak: CircuitBreak?
 /**
  * 获得断路的注解
  */
-public val IMethodMeta.circuitBreak: CircuitBreak?
+public val IMethodMeta<*>.circuitBreak: CircuitBreak?
     get(){
         return getAnnotation()
     }

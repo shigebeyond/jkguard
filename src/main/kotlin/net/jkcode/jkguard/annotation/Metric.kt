@@ -28,7 +28,7 @@ public val Method.metric: Metric?
 /**
  * 获得计量的注解
  */
-public val IMethodMeta.metric: Metric?
+public val IMethodMeta<*>.metric: Metric?
     get(){
         return getAnnotation()
     }

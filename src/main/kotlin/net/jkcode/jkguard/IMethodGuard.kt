@@ -18,7 +18,7 @@ interface IMethodGuard {
     /**
      * 守护的目标方法
      */
-    val method: IMethodMeta
+    val method: IMethodMeta<*>
 
     /**
      * 带守护的方法调用者

@@ -26,7 +26,7 @@ public val Method.keyCombine: KeyCombine?
 /**
  * 获得key合并的注解
  */
-public val IMethodMeta.keyCombine: KeyCombine?
+public val IMethodMeta<*>.keyCombine: KeyCombine?
     get(){
         return getAnnotation()
     }

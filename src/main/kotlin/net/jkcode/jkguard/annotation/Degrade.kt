@@ -26,7 +26,7 @@ public val Method.degrade: Degrade?
 /**
  * 获得降级的注解
  */
-public val IMethodMeta.degrade: Degrade?
+public val IMethodMeta<*>.degrade: Degrade?
     get(){
         return getAnnotation()
     }

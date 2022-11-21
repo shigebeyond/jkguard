@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture
  * @date 2019-04-19 12:26 PM
  */
 open class MethodGuard(
-        public override val method: IMethodMeta // 被守护的方法
+        public override val method: IMethodMeta<*> // 被守护的方法
 ) : IMethodGuard {
 
     constructor(method: Method, handler: IMethodGuardInvoker): this(MethodMeta(method, handler))

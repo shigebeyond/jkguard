@@ -31,7 +31,7 @@ public val Method.cache: Cache?
 /**
  * 获得缓存的注解
  */
-public val IMethodMeta.cache: Cache?
+public val IMethodMeta<*>.cache: Cache?
     get(){
         return getAnnotation()
     }

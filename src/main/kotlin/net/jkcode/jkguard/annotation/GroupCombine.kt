@@ -34,7 +34,7 @@ public val Method.groupCombine: GroupCombine?
 /**
  * 获得group合并的注解
  */
-public val IMethodMeta.groupCombine: GroupCombine?
+public val IMethodMeta<*>.groupCombine: GroupCombine?
     get(){
         return getAnnotation()
     }

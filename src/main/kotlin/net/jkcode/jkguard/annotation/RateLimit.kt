@@ -30,7 +30,7 @@ public val Method.rateLimit: RateLimit?
 /**
  * 获得限流的注解
  */
-public val IMethodMeta.rateLimit: RateLimit?
+public val IMethodMeta<*>.rateLimit: RateLimit?
     get(){
         return getAnnotation()
     }

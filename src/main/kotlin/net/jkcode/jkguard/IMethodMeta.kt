@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2022-4-27 7:25 PM
  */
-abstract class IMethodMeta(
+abstract class IMethodMeta<Return>(
         public val handler: IMethodGuardInvoker // 带守护的方法调用者, 要传递给 MethodGuard
 ) {
 
@@ -91,7 +91,7 @@ abstract class IMethodMeta(
      *    在server端的IMethodGuardInvoker#invokeAfterGuard()/两端的降级处理中调用
      *    实现：server端实现是调用包装的本地方法, client端实现是发rpc请求
      */
-    abstract fun invoke(obj: Any, vararg args: Any?): Any?
+    abstract fun invoke(obj: Any, vararg args: Any?): Return
 
     /**
      * 从CompletableFuture获得方法结果值
@@ -106,6 +106,6 @@ abstract class IMethodMeta(
      * @param name 兄弟方法名
      * @return
      */
-    abstract fun getBrotherMethod(name: String): IMethodMeta
+    abstract fun getBrotherMethod(name: String): IMethodMeta<Return>
 
 }
