@@ -76,7 +76,7 @@ class MethodMeta(
 
     /**
      * 从CompletableFuture获得方法结果值
-     *
+     *    根据java方法返回类型(是否CompletableFuture)来决定返回异步or同步结果
      * @param resFuture
      * @return
      */
